@@ -4,7 +4,11 @@ class_name Player
 extends CharacterBody2D
 
 ########################################################################################################################
-### Movement settings and functions
+### MOVEMENT settings and functions
+###
+### the "@export var ..." can be changed in the inspector, the values used here are the default values
+### get input direction is seperated from the movement function for later use in the STATE_HANDLING
+### the "movement" function needs to be at least called in the _physics_process(delta) function
 ########################################################################################################################
 
 @export_category("Movement Settings")
@@ -29,7 +33,13 @@ func movement():
 			velocity.x = move_toward(velocity.x, 0, move_default_friction / 4)
 
 ########################################################################################################################
-### Jumping settings and options
+### JUMPING settings and options
+###
+### "@export var ..." can be changed in the inspector
+### "@onready var ..." handle calculations for jumping using the "@export var ..."
+### Seperating the jump functings and gravity functions into their own functions allows us to give-
+### unique properties to either, in this case we seperate out gravity to change it if the player is-
+### on the ground or not.
 ########################################################################################################################
 
 @export_category("Jump Settings")
@@ -48,7 +58,10 @@ func jump():
 	velocity.y = jump_velocity
 
 ########################################################################################################################
-### State handling
+### STATE HANDLING
+###
+### This will be a series of functions and variables that will allow us to define actions a player is-
+### doing to make actions dinstinct, and to add restrictions to movement
 ########################################################################################################################
 
 enum STATE { WALK_RIGHT, WALK_LEFT, IDLE, WALL_HUG, JUMP }
@@ -57,6 +70,9 @@ var previous_state : STATE
 
 ########################################################################################################################
 ### Physics Process
+###
+### This sections will handle most of our realtime actions, this is where we call functions from-
+### previous sections for actual implementation
 ########################################################################################################################
 
 @onready var sprite = $Sprite2D
