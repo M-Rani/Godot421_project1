@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://bjfj1yxjftpav"]
+
+[ext_resource type="PackedScene" uid="uid://dkndmlw2e77fv" path="res://scenes/entities/player/player.tscn" id="1_fkeu0"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6u8rw"]
+size = Vector2(1152, 187)
+
+[node name="level" type="Node2D"]
+
+[node name="floor" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="floor"]
+position = Vector2(576, 741.5)
+shape = SubResource("RectangleShape2D_6u8rw")
+
+[node name="player" parent="." instance=ExtResource("1_fkeu0")]
+position = Vector2(411, 254)
+move_default_speed = 100.0
+
+[node name="Camera2D" type="Camera2D" parent="player"]
+offset = Vector2(0, -10)
+zoom = Vector2(5, 5)
+position_smoothing_enabled = true
+position_smoothing_speed = 10.0
+drag_horizontal_enabled = true
