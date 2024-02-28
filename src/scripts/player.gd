@@ -12,14 +12,15 @@ extends CharacterBody2D
 ########################################################################################################################
 
 @export_category("Movement Settings")
-@export var move_default_speed := 300.0
-@export var move_default_acceleration := 50.0
+@export var move_default_speed := 200.0
+@export var move_default_acceleration := 15.0
 @export var move_default_friction := 50.0
 
 func get_input_direction():
 	return Input.get_axis("move_left", "move_right")
 
 func movement():
+	print(velocity.x)
 	var direction = get_input_direction()
 	if is_on_floor():
 		if direction != 0:
@@ -31,6 +32,22 @@ func movement():
 			velocity.x = move_toward(velocity.x, move_default_speed * direction, move_default_acceleration / 4)
 		else:
 			velocity.x = move_toward(velocity.x, 0, move_default_friction / 4)
+
+########################################################################################################################
+### DASH and PULSE settings
+###
+### current dash implementation takes default_speed and multiplies it by a dash_power value
+########################################################################################################################
+
+@export_category("Dash Settings")
+@export var dash_default_power := 1.5
+@export var push_force := 15.0
+
+func dash():
+	if is_on_floor():
+		velocity.x = move_default_speed * dash_default_power * get_input_direction()
+	else:
+		velocity.x = move_default_speed * dash_default_power / 1.25 * get_input_direction()
 
 ########################################################################################################################
 ### JUMPING settings and options
@@ -64,9 +81,25 @@ func jump():
 ### doing to make actions dinstinct, and to add restrictions to movement
 ########################################################################################################################
 
-enum STATE { WALK_RIGHT, WALK_LEFT, IDLE, WALL_HUG, JUMP }
+enum STATE { WALK, IDLE, WALL_HUG, JUMP, ATTACK }
 var current_state : STATE
 var previous_state : STATE
+
+func enter_state():
+	match current_state:
+		STATE.IDLE:
+			pass
+		STATE.WALK:
+			pass
+		STATE.WALL_HUG:
+			pass
+		STATE.JUMP:
+			pass
+		STATE.ATTACK:
+			pass
+
+func update_state() -> void:
+	var direction = get_input_direction()
 
 ########################################################################################################################
 ### Physics Process
@@ -78,8 +111,17 @@ var previous_state : STATE
 @onready var sprite = $Sprite2D
 
 func _physics_process(delta):
+
+	# Physics Movement
 	movement()
 
+	if Input.is_action_just_pressed("jump") and is_on_floor():
+		jump()
+
+	if Input.is_action_just_pressed("dash"):
+		dash()
+
+	# Sprite Handling
 	if velocity.x > 0:
 		sprite.flip_h = false
 		sprite.offset = Vector2(0, 0)
@@ -87,9 +129,11 @@ func _physics_process(delta):
 		sprite.flip_h = true
 		sprite.offset = Vector2(0, 0)
 
-	if Input.is_action_just_pressed("jump") and is_on_floor():
-		jump()
-
+	# Handle collision with other rigid bodies
+	for i in get_slide_collision_count():
+		var c = get_slide_collision(i)
+		if c.get_collider() is RigidBody2D:
+			c.get_collider().apply_central_impulse(-c.get_normal() * push_force)
 
 	# Apply velocity to player
 	velocity.y += get_gravity() * delta

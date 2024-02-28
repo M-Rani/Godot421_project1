@@ -1,25 +1,150 @@
-[gd_scene load_steps=3 format=3 uid="uid://bjfj1yxjftpav"]
+[gd_scene load_steps=6 format=3 uid="uid://bjfj1yxjftpav"]
 
 [ext_resource type="PackedScene" uid="uid://dkndmlw2e77fv" path="res://scenes/entities/player/player.tscn" id="1_fkeu0"]
+[ext_resource type="Texture2D" uid="uid://dml37q26xbyld" path="res://assets/icon.svg" id="1_sxgdr"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dsj8c"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6u8rw"]
-size = Vector2(1152, 187)
+size = Vector2(1152, 64)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ydfjk"]
 
 [node name="level" type="Node2D"]
 
+[node name="Box" type="RigidBody2D" parent="."]
+position = Vector2(450, 254)
+gravity_scale = 0.5
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Box"]
+shape = SubResource("RectangleShape2D_dsj8c")
+
+[node name="Sprite2D" type="Sprite2D" parent="Box"]
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("1_sxgdr")
+
+[node name="Box2" type="RigidBody2D" parent="."]
+position = Vector2(449, 232)
+gravity_scale = 0.5
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Box2"]
+shape = SubResource("RectangleShape2D_dsj8c")
+
+[node name="Sprite2D" type="Sprite2D" parent="Box2"]
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("1_sxgdr")
+
+[node name="Box3" type="RigidBody2D" parent="."]
+position = Vector2(450, 209)
+gravity_scale = 0.5
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Box3"]
+shape = SubResource("RectangleShape2D_dsj8c")
+
+[node name="Sprite2D" type="Sprite2D" parent="Box3"]
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("1_sxgdr")
+
+[node name="Box4" type="RigidBody2D" parent="."]
+position = Vector2(449, 187)
+gravity_scale = 0.5
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Box4"]
+shape = SubResource("RectangleShape2D_dsj8c")
+
+[node name="Sprite2D" type="Sprite2D" parent="Box4"]
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("1_sxgdr")
+
+[node name="Box5" type="RigidBody2D" parent="."]
+position = Vector2(451, 298)
+gravity_scale = 0.5
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Box5"]
+shape = SubResource("RectangleShape2D_dsj8c")
+
+[node name="Sprite2D" type="Sprite2D" parent="Box5"]
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("1_sxgdr")
+
+[node name="Box6" type="RigidBody2D" parent="."]
+position = Vector2(450, 276)
+gravity_scale = 0.5
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Box6"]
+shape = SubResource("RectangleShape2D_dsj8c")
+
+[node name="Sprite2D" type="Sprite2D" parent="Box6"]
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("1_sxgdr")
+
 [node name="floor" type="StaticBody2D" parent="."]
+metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="floor"]
-position = Vector2(576, 741.5)
+position = Vector2(576, 680)
 shape = SubResource("RectangleShape2D_6u8rw")
 
+[node name="Sprite2D" type="Sprite2D" parent="floor"]
+material = SubResource("CanvasItemMaterial_ydfjk")
+position = Vector2(576, 680)
+scale = Vector2(9, 0.5)
+texture = ExtResource("1_sxgdr")
+
+[node name="floor2" type="StaticBody2D" parent="."]
+position = Vector2(593, -64)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="floor2"]
+position = Vector2(576, 680)
+shape = SubResource("RectangleShape2D_6u8rw")
+
+[node name="Sprite2D" type="Sprite2D" parent="floor2"]
+material = SubResource("CanvasItemMaterial_ydfjk")
+position = Vector2(576, 680)
+scale = Vector2(9, 0.5)
+texture = ExtResource("1_sxgdr")
+
+[node name="floor3" type="StaticBody2D" parent="."]
+position = Vector2(1339, -127)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="floor3"]
+position = Vector2(576, 680)
+shape = SubResource("RectangleShape2D_6u8rw")
+
+[node name="Sprite2D" type="Sprite2D" parent="floor3"]
+material = SubResource("CanvasItemMaterial_ydfjk")
+position = Vector2(576, 680)
+scale = Vector2(9, 0.5)
+texture = ExtResource("1_sxgdr")
+
+[node name="floor4" type="StaticBody2D" parent="."]
+position = Vector2(1932, -191)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="floor4"]
+position = Vector2(576, 680)
+shape = SubResource("RectangleShape2D_6u8rw")
+
+[node name="Sprite2D" type="Sprite2D" parent="floor4"]
+material = SubResource("CanvasItemMaterial_ydfjk")
+position = Vector2(576, 680)
+scale = Vector2(9, 0.5)
+texture = ExtResource("1_sxgdr")
+
 [node name="player" parent="." instance=ExtResource("1_fkeu0")]
-position = Vector2(411, 254)
-move_default_speed = 100.0
+position = Vector2(373, 245)
 
 [node name="Camera2D" type="Camera2D" parent="player"]
 offset = Vector2(0, -10)
-zoom = Vector2(5, 5)
+zoom = Vector2(2, 2)
 position_smoothing_enabled = true
 position_smoothing_speed = 10.0
 drag_horizontal_enabled = true
