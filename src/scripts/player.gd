@@ -12,12 +12,19 @@ extends CharacterBody2D
 ########################################################################################################################
 
 @export_category("Movement Settings")
-@export var move_default_speed := 200.0
+@export var move_default_speed := 150.0
 @export var move_default_acceleration := 15.0
 @export var move_default_friction := 50.0
 
+var direction_facing : int
+
 func get_input_direction():
-	return Input.get_axis("move_left", "move_right")
+	var input_axis = Input.get_axis("move_left", "move_right")
+	if input_axis < 0:
+		direction_facing = -1
+	elif input_axis > 0:
+		direction_facing = 1
+	return input_axis
 
 func movement():
 	print(velocity.x)
@@ -40,8 +47,7 @@ func movement():
 ########################################################################################################################
 
 @export_category("Dash Settings")
-@export var dash_default_power := 1.5
-@export var push_force := 15.0
+@export var dash_default_power := 3
 
 func dash():
 	if is_on_floor():
@@ -60,19 +66,26 @@ func dash():
 ########################################################################################################################
 
 @export_category("Jump Settings")
-@export var jump_height := 100.0
-@export var jump_time_to_peak := 0.5
-@export var jump_time_to_descent := 0.4
+@export var jump_height := 75.0
+@export var jump_time_to_peak := 0.4
+@export var jump_time_to_descent := 0.3
 
 @onready var jump_velocity : float = ((2.0 * jump_height) / jump_time_to_peak) * -1.0
 @onready var jump_gravity : float = ((-2.0 * jump_height) / (jump_time_to_peak * jump_time_to_peak)) * -1.0
 @onready var fall_gravity : float = ((-2.0 * jump_height) / (jump_time_to_descent * jump_time_to_descent)) * -1.0
+
+var wall_jump_ready = true
 
 func get_gravity() -> float:
 	return jump_gravity if velocity.y < 0.0 else fall_gravity
 
 func jump():
 	velocity.y = jump_velocity
+
+func wall_jump():
+	wall_jump_ready = false
+	velocity.y = jump_velocity
+	velocity.x = -direction_facing * 200.0
 
 ########################################################################################################################
 ### STATE HANDLING
@@ -109,17 +122,41 @@ func update_state() -> void:
 ########################################################################################################################
 
 @onready var sprite = $Sprite2D
+@onready var coyote_timer = $CoyoteTimer
+
+@export var default_push_force := 30.0
+@export var default_jump_timer := 0.1
+
+var is_jumping : bool
 
 func _physics_process(delta):
 
-	# Physics Movement
+	# Movement
 	movement()
 
-	if Input.is_action_just_pressed("jump") and is_on_floor():
-		jump()
+	# Set jump_timer to default, reset when action is pressed
+	var jump_timer := 0.0
+	if Input.is_action_just_pressed("jump"):
+		is_jumping = true
+		jump_timer = default_jump_timer
+
+	jump_timer -= delta
+	if jump_timer > 0:
+		if is_on_floor() or !coyote_timer.is_stopped():
+			coyote_timer.stop()
+			jump()
+		elif is_on_wall_only() and wall_jump_ready:
+			wall_jump()
 
 	if Input.is_action_just_pressed("dash"):
 		dash()
+
+	# Reset values when standing on floor
+	if is_on_floor():
+		wall_jump_ready = true
+
+	if velocity.y > 0:
+		is_jumping = false
 
 	# Sprite Handling
 	if velocity.x > 0:
@@ -133,8 +170,11 @@ func _physics_process(delta):
 	for i in get_slide_collision_count():
 		var c = get_slide_collision(i)
 		if c.get_collider() is RigidBody2D:
-			c.get_collider().apply_central_impulse(-c.get_normal() * push_force)
+			c.get_collider().apply_central_impulse(-c.get_normal() * default_push_force)
 
-	# Apply velocity to player
+	var was_on_floor = is_on_floor()
 	velocity.y += get_gravity() * delta
 	move_and_slide()
+	if !is_on_floor() and was_on_floor and !is_jumping:
+		coyote_timer.start()
+
