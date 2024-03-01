@@ -88,33 +88,6 @@ func wall_jump():
 	velocity.x = -direction_facing * 200.0
 
 ########################################################################################################################
-### STATE HANDLING
-###
-### This will be a series of functions and variables that will allow us to define actions a player is-
-### doing to make actions dinstinct, and to add restrictions to movement
-########################################################################################################################
-
-enum STATE { WALK, IDLE, WALL_HUG, JUMP, ATTACK }
-var current_state : STATE
-var previous_state : STATE
-
-func enter_state():
-	match current_state:
-		STATE.IDLE:
-			pass
-		STATE.WALK:
-			pass
-		STATE.WALL_HUG:
-			pass
-		STATE.JUMP:
-			pass
-		STATE.ATTACK:
-			pass
-
-func update_state() -> void:
-	var direction = get_input_direction()
-
-########################################################################################################################
 ### Physics Process
 ###
 ### This sections will handle most of our realtime actions, this is where we call functions from-
