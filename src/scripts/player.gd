@@ -13,7 +13,7 @@ extends CharacterBody2D
 
 @export_category("Movement Settings")
 @export var move_default_speed := 150.0
-@export var move_default_acceleration := 15.0
+@export var move_default_acceleration := 50.0
 @export var move_default_friction := 50.0
 
 var direction_facing : int
@@ -77,7 +77,11 @@ func dash():
 var wall_jump_ready = true
 
 func get_gravity() -> float:
-	return jump_gravity if velocity.y < 0.0 else fall_gravity
+	if !is_on_wall():
+		return jump_gravity if velocity.y < 0.0 else fall_gravity
+	else:
+		# If touching the wall, lower gravity
+		return jump_gravity if velocity.y < 0.0 else ( fall_gravity / 8 )
 
 func jump():
 	velocity.y = jump_velocity
@@ -86,6 +90,9 @@ func wall_jump():
 	wall_jump_ready = false
 	velocity.y = jump_velocity
 	velocity.x = -direction_facing * 200.0
+
+func boost_up():
+	velocity.y = jump_velocity * 2
 
 ########################################################################################################################
 ### Physics Process
@@ -98,7 +105,7 @@ func wall_jump():
 @onready var coyote_timer = $CoyoteTimer
 
 @export var default_push_force := 30.0
-@export var default_jump_timer := 0.1
+@export var default_jump_timer := 0.2
 
 var is_jumping : bool
 
@@ -114,6 +121,7 @@ func _physics_process(delta):
 		jump_timer = default_jump_timer
 
 	jump_timer -= delta
+
 	if jump_timer > 0:
 		if is_on_floor() or !coyote_timer.is_stopped():
 			coyote_timer.stop()
@@ -146,7 +154,10 @@ func _physics_process(delta):
 			c.get_collider().apply_central_impulse(-c.get_normal() * default_push_force)
 
 	var was_on_floor = is_on_floor()
-	velocity.y += get_gravity() * delta
+
+	if coyote_timer.is_stopped():
+		velocity.y += get_gravity() * delta
+
 	move_and_slide()
 	if !is_on_floor() and was_on_floor and !is_jumping:
 		coyote_timer.start()

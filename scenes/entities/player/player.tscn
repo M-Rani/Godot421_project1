@@ -19,5 +19,5 @@ flip_h = true
 shape = SubResource("CapsuleShape2D_7pdn5")
 
 [node name="CoyoteTimer" type="Timer" parent="."]
-wait_time = 5.0
+wait_time = 0.1
 one_shot = true
