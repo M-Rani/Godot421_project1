@@ -1,10 +1,11 @@
 [gd_scene load_steps=4 format=3 uid="uid://dkndmlw2e77fv"]
 
 [ext_resource type="Script" path="res://src/scripts/player.gd" id="1_vwunv"]
-[ext_resource type="Texture2D" uid="uid://dml37q26xbyld" path="res://assets/icon.svg" id="2_lgus4"]
+[ext_resource type="Texture2D" uid="uid://0q2281uss7rx" path="res://assets/snail_hero/walk.png" id="2_wfpgc"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_7pdn5"]
-height = 20.0
+radius = 5.0
+height = 24.0
 
 [node name="player" type="CharacterBody2D"]
 script = ExtResource("1_vwunv")
@@ -12,10 +13,12 @@ script = ExtResource("1_vwunv")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
 scale = Vector2(0.155, 0.155)
-texture = ExtResource("2_lgus4")
-flip_h = true
+texture = ExtResource("2_wfpgc")
+offset = Vector2(-40, 0)
+hframes = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 6)
 shape = SubResource("CapsuleShape2D_7pdn5")
 
 [node name="CoyoteTimer" type="Timer" parent="."]

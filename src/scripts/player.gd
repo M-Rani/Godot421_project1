@@ -27,7 +27,6 @@ func get_input_direction():
 	return input_axis
 
 func movement():
-	print(velocity.x)
 	var direction = get_input_direction()
 	if is_on_floor():
 		if direction != 0:
@@ -81,7 +80,7 @@ func get_gravity() -> float:
 		return jump_gravity if velocity.y < 0.0 else fall_gravity
 	else:
 		# If touching the wall, lower gravity
-		return jump_gravity if velocity.y < 0.0 else ( fall_gravity / 8 )
+		return jump_gravity if velocity.y < 0.0 else ( fall_gravity / 16 )
 
 func jump():
 	velocity.y = jump_velocity
@@ -108,6 +107,10 @@ func boost_up():
 @export var default_jump_timer := 0.2
 
 var is_jumping : bool
+
+func _input(event : InputEvent):
+	if (event.is_action_pressed("move_down") and is_on_floor()):
+		position.y += 2
 
 func _physics_process(delta):
 
@@ -141,11 +144,13 @@ func _physics_process(delta):
 
 	# Sprite Handling
 	if velocity.x > 0:
+		# Facing Right
 		sprite.flip_h = false
-		sprite.offset = Vector2(0, 0)
+		sprite.offset = Vector2(-40, 0)
 	elif velocity.x < 0:
+		# Facing Left
 		sprite.flip_h = true
-		sprite.offset = Vector2(0, 0)
+		sprite.offset = Vector2(40, 0)
 
 	# Handle collision with other rigid bodies
 	for i in get_slide_collision_count():
