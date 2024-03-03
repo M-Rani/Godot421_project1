@@ -12,8 +12,8 @@ extends CharacterBody2D
 ########################################################################################################################
 
 @export_category("Movement Settings")
-@export var move_default_speed := 150.0
-@export var move_default_acceleration := 50.0
+@export var move_default_speed := 165.0
+@export var move_default_acceleration := 60.0
 @export var move_default_friction := 50.0
 
 var direction_facing : int
@@ -46,7 +46,7 @@ func movement():
 ########################################################################################################################
 
 @export_category("Dash Settings")
-@export var dash_default_power := 3
+@export var dash_default_power := 5.0
 
 func dash():
 	if is_on_floor():
@@ -65,9 +65,10 @@ func dash():
 ########################################################################################################################
 
 @export_category("Jump Settings")
-@export var jump_height := 75.0
+@export var jump_height := 70.0
 @export var jump_time_to_peak := 0.4
 @export var jump_time_to_descent := 0.3
+@export var wall_jump_force := 300.0
 
 @onready var jump_velocity : float = ((2.0 * jump_height) / jump_time_to_peak) * -1.0
 @onready var jump_gravity : float = ((-2.0 * jump_height) / (jump_time_to_peak * jump_time_to_peak)) * -1.0
@@ -86,9 +87,8 @@ func jump():
 	velocity.y = jump_velocity
 
 func wall_jump():
-	wall_jump_ready = false
 	velocity.y = jump_velocity
-	velocity.x = -direction_facing * 200.0
+	velocity.x = -direction_facing * wall_jump_force
 
 func boost_up():
 	velocity.y = jump_velocity * 2
@@ -102,42 +102,47 @@ func boost_up():
 
 @onready var sprite = $Sprite2D
 @onready var coyote_timer = $CoyoteTimer
+@onready var wall_jump_timer = $WallJumpTimer
+@onready var sprint_cooldown_timer = $SprintCooldownTimer
 
 @export var default_push_force := 30.0
-@export var default_jump_timer := 0.2
+@export var default_jump_timer := 0.1
 
+var jump_timer := 0.0
 var is_jumping : bool
+var wall_jump_counter := 0
 
 func _input(event : InputEvent):
 	if (event.is_action_pressed("move_down") and is_on_floor()):
-		position.y += 2
+		position.y += 5
+
+	if Input.is_action_just_pressed("dash") and sprint_cooldown_timer.is_stopped():
+		sprint_cooldown_timer.start()
+		dash()
+
 
 func _physics_process(delta):
 
-	# Movement
 	movement()
 
 	# Set jump_timer to default, reset when action is pressed
-	var jump_timer := 0.0
 	if Input.is_action_just_pressed("jump"):
 		is_jumping = true
 		jump_timer = default_jump_timer
 
-	jump_timer -= delta
-
-	if jump_timer > 0:
+	if jump_timer > 0.0:
+		jump_timer -= delta
 		if is_on_floor() or !coyote_timer.is_stopped():
 			coyote_timer.stop()
 			jump()
-		elif is_on_wall_only() and wall_jump_ready:
+		elif is_on_wall_only() and wall_jump_timer.is_stopped() and wall_jump_counter < 3:
+			coyote_timer.stop()
+			wall_jump_timer.start()
 			wall_jump()
+			wall_jump_counter += 1
 
-	if Input.is_action_just_pressed("dash"):
-		dash()
-
-	# Reset values when standing on floor
 	if is_on_floor():
-		wall_jump_ready = true
+		wall_jump_counter = 0
 
 	if velocity.y > 0:
 		is_jumping = false
